@@ -24,9 +24,8 @@ const seed = {
     mob_phone: '+351323213511235'
   },
   loginUser: {
-    name: 'Mike',
-    email: 'mike@example.com',
-    
+    email: 'phil@example.com',
+    password: 'phil123'
   }
 }
 

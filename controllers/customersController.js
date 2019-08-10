@@ -62,6 +62,7 @@ export default class Customers {
       const { name, email, password } = req.body;
       const createCustomerQuery = `INSERT INTO customer SET ?`;
       const hashedPassword = hashPassword(password);
+      console.log(hashedPassword)
       const insertedCustomer = await connection.query(createCustomerQuery, {
         name, email, password: hashedPassword
       });
@@ -84,6 +85,7 @@ export default class Customers {
         });
       }
     } catch ( error ) {
+      console.log(error)
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -130,35 +132,39 @@ export default class Customers {
       const { email, password }  = req.body;
       const checkEmailQuery =
       `SELECT * FROM customer WHERE email= ${connection.escape(email)}`;
-      const schema = await connection.query(checkEmailQuery);
-      const checkHashedPassword = schema[0].password
-      console.log(checkHashedPassword)
-      if ( schema.length == 0 ) {
-        return res.status(404).json({
-          message: 'Cannot be found'
-        });
-      }
-      else if (!validPassword(password, checkHashedPassword)) {
-        return res.status(400).json({
-          "error": {
-            "status": 400,
-            "code": "USR_01",
-            "message": "Email or Password is invalid.",
-            "field": "Email or Password"
-          }
-        });
-      }
-      else {
-        const id = schema[0].customer_id
-        const token = generateAuthToken(email, password, id);
-        const modifiedToken = `Bearer ${token}`
-        const modifiedSchema = removePassword(schema)
-        const result = res.status(200).json({
-          customer: modifiedSchema,
-          accessToken: modifiedToken,
-          expires_in: "24h"
-        });
-        return result;
+      try {
+        const checkemail = await connection.query(checkEmailQuery);
+        console.log(">>>123", checkemail)
+        const checkHashedPassword = checkemail[0].password
+        if ( checkemail.length == 0 ) {
+          return res.status(404).json({
+            message: 'Cannot be found'
+          });
+        }
+        else if (!validPassword(password, checkHashedPassword)) {
+          return res.status(400).json({
+            "error": {
+              "status": 400,
+              "code": "USR_01",
+              "message": "Email or Password is invalid.",
+              "field": "Email or Password"
+            }
+          });
+        }
+        else {
+          const id = checkemail[0].customer_id
+          const token = generateAuthToken(email, password, id);
+          const modifiedToken = `Bearer ${token}`
+          const schema = removePassword(checkemail)
+          const result = res.status(200).json({
+            customer: {schema},
+            accessToken: modifiedToken,
+            expires_in: "24h"
+          });
+          return result;
+        }
+      } catch ( error ) {
+
       }
     } catch ( error ) {
       console.log( error )

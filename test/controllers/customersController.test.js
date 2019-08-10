@@ -22,7 +22,7 @@ describe('TEST for customers', () => {
     .send(seed.newUser)
     .end(( error, res ) => {
       token = res.body.accessToken
-      console.log(splitToken(token))
+      console.log(res)
       expect(res.body).to.have.property('accessToken')
       expect(res.body).to.have.property('expires_in')
       expect(res.body).to.have.property('customer')
@@ -54,7 +54,6 @@ describe('TEST for customers', () => {
     .get('/customer')
     .set('user-key', splitToken(token))
     .end(( error, res) => {
-      console.log(res.body)
       expect(res.body.modifiedCustomer).to.have.property('customer_id')
       expect(res.body.modifiedCustomer).to.have.property('email')
       expect(res.body.modifiedCustomer).to.have.property('name')
@@ -63,12 +62,16 @@ describe('TEST for customers', () => {
       done()
     })
   });
-  // it('POST /customers/login', (done) => {
-  //   chai.request(app)
-  //   .post('/customers/login')
-  //   .send(seed.newUser)
-  //   .end(( error, res ) => {
-
-  //   })
-  // })
+  it('POST /customers/login', (done) => {
+    chai.request(app)
+    .post('/customers/login')
+    .send(seed.loginUser)
+    .end(( error, res ) => {
+      console.log("67", res)
+      // expect(res.body.customer).to.be.an('object')
+      // expect(res.body.customer).to.have.property('customer_id')
+      // expect(res.body.customer).to.not.have.property('password')
+      done()
+    })
+  })
 })
