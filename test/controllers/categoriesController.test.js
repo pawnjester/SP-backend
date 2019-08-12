@@ -47,7 +47,7 @@ describe('TEST for Categories Controller', () => {
     .get('/categories/f')
     .end(( error, res ) => {
       expect(res.body.error).to.be.an('object')
-      expect(res.body.error).to.have.status(422)
+      expect(res.body.error).to.have.status(400)
       expect(res.body.error.message).to.equal('The ID is not a number.')
       expect(res.body.error.field).to.equal('category_id')
       done()
@@ -67,7 +67,7 @@ describe('TEST for Categories Controller', () => {
     .get('/categories/inProduct/101f')
     .end(( error, res ) => {
       expect(res.body.error).to.be.an('object')
-      expect(res.body.error).to.have.status(422)
+      expect(res.body.error).to.have.status(400)
       expect(res.body.error.message).to.equal('The ID is not a number.')
       expect(res.body.error.field).to.equal('product_id')
       done()
@@ -86,7 +86,7 @@ describe('TEST for Categories Controller', () => {
     .get('/categories/inDepartment/1f')
     .end(( error, res ) => {
       expect(res.body.error).to.be.an('object')
-      expect(res.body.error).to.have.status(422)
+      expect(res.body.error).to.have.status(400)
       expect(res.body.error.message).to.equal('The ID is not a number.')
       expect(res.body.error.field).to.equal('department_id')
       done()

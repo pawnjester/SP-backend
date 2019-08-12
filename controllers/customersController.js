@@ -41,7 +41,6 @@ export default class Customers {
         customer
       });
     } catch ( error ) {
-      console.log(error)
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -62,7 +61,6 @@ export default class Customers {
       const { name, email, password } = req.body;
       const createCustomerQuery = `INSERT INTO customer SET ?`;
       const hashedPassword = hashPassword(password);
-      console.log(hashedPassword)
       const insertedCustomer = await connection.query(createCustomerQuery, {
         name, email, password: hashedPassword
       });
@@ -85,7 +83,6 @@ export default class Customers {
         });
       }
     } catch ( error ) {
-      console.log(error)
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -134,7 +131,6 @@ export default class Customers {
       `SELECT * FROM customer WHERE email= ${connection.escape(email)}`;
       try {
         const checkemail = await connection.query(checkEmailQuery);
-        console.log(">>>123", checkemail)
         const checkHashedPassword = checkemail[0].password
         if ( checkemail.length == 0 ) {
           return res.status(404).json({
@@ -164,10 +160,14 @@ export default class Customers {
           return result;
         }
       } catch ( error ) {
-
+        return res.status(500).json({
+          "error": {
+            "status": 500,
+            "message": error.message,
+          }
+        });
       }
     } catch ( error ) {
-      console.log( error )
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -238,22 +238,28 @@ export default class Customers {
         region,
         postal_code,
         country,
-        shipping_region_id} = req.body;
-      const { currentUserId } = req
+        shipping_region_id,
+        address_2 } = req.body;
+      const { currentUserId } = req;
+      const shipping_id = parseInt(shipping_region_id, 10);
       const updateCustomerAddressQuery =
-      `UPDATE customer SET address_1 = ${address_1}, city = ${city},
-      region = ${region}, postal_code = ${postal_code},
-      country = ${country}, shipping_region_id = ${shipping_region_id} where customer_id = ${currentUserId}`
-      if ( !req.query ) {
-        return res.status(400).json({
-          message: 'You have put in an address'
-        });
-      } else {
-        const customer = await connection.query(updateCustomerAddressQuery);
-        return res.status(200).json({
-          customer
-        });
-      }
+      `UPDATE customer
+      SET address_1 = ${connection.escape(address_1)},
+      city = ${connection.escape(city)},
+      region = ${connection.escape(region)},
+      postal_code = ${connection.escape(postal_code)},
+      country = ${connection.escape(country)},
+      shipping_region_id = ${connection.escape(shipping_id)}
+      where customer_id = ${currentUserId}`;
+      const updateCustomer = await connection.query(updateCustomerAddressQuery);
+      const getCustomerQuery =
+      `select * from customer
+      where customer_id = ${currentUserId}`;
+      const getCustomer = await connection.query(getCustomerQuery);
+      const customer = removePassword(getCustomer);
+      return res.status(200).json({
+        customer
+      });
     } catch ( error ) {
       return res.status(500).json({
         "error": {
@@ -281,7 +287,12 @@ export default class Customers {
       where customer_id = ${currentUserId}`;
       if ( !credit_card ) {
         return res.status(400).json({
-          message: 'You have to put in a credit card'
+          "error": {
+            "status": 400,
+            "code": "USR_08",
+            "message": "You have to put in a credit card",
+            "field": "credit_card"
+          }
         });
       } else if (!isValidCard(credit_card)) {
         return res.status(400).json({
@@ -295,7 +306,9 @@ export default class Customers {
       }
       else {
         const updateCustomer = await connection.query(updateCreditCardQuery);
-        const customerQuery = `select * from customer where customer_id = ${currentUserId}`
+        const customerQuery =
+        `select * from customer
+        where customer_id = ${currentUserId}`
         const customer = await connection.query(customerQuery);
         const modifiedSchema = removePassword(customer)
         const result = res.status(200).json({

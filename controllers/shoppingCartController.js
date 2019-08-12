@@ -17,12 +17,11 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-      console.log(error)
       return res.status(500).json({
-        "code": "USR_02",
-        "message": "The field example is empty.",
-        "field": "example",
-        "status": "500"
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
       });
     }
   }
@@ -36,46 +35,59 @@ export default class ShoppingCart {
   async addProductToCart ( req, res ) {
 
     try {
+      let productQuantity;
       const { cart_id, product_id, attributes, quantity, added_on, buy_now } = req.body;
-      const checkIfProductExist = `select * from product where product_id = ${product_id}`;
-      if ( checkIfProductExist !== null ) {
-        const addProductQuery = `INSERT INTO shopping_cart SET ?`;
-        const dateNow = utils();
-        const addedProduct = await connection.query(addProductQuery, {
+      const getQuantityQuery =
+      `SELECT quantity
+      FROM   shopping_cart
+      WHERE  cart_id = ${cart_id}
+      AND product_id = ${product_id}
+      AND attributes = ${attributes}
+      INTO   ${productQuantity}`
+      const getQuantity = await connection.query(getQuantityQuery);
+      if (productQuantity === null ) {
+        const addProductQuery = `insert into shopping_cart ?`;
+        const addProduct = await connection.query(addProductQuery, {
           cart_id,
           product_id,
           attributes,
           quantity,
           added_on: dateNow,
           buy_now
-        });
-        const checkProductQuery = `SELECT
-        shopping_cart.item_id,
-        product.product_id,
-        product.name,
-        shopping_cart.attributes,
-        product.price,
-        shopping_cart.quantity,
-        product.image FROM product
-        INNER JOIN shopping_cart ON
-        product.product_id = shopping_cart.product_id
-        WHERE product.product_id = ${product_id}`;
-        // const subtotal = price * quantity;
-        const getProducts = await connection.query(checkProductQuery);
-        // getProducts.subtotal = subtotal
-        const result = res.status(200).json({
-          getProducts
-        });
-        return result;
-      } else {
+        })
+      }
+      else {
+        const updateCartQuery = `
+        UPDATE shopping_cart
+        SET    quantity = quantity + 1, buy_now = true
+        WHERE  cart_id = ${cart_id}
+        AND product_id = ${product_id}
+        AND attributes = ${attributes}`
+        const updateCart  = await connection.query(updateCartQuery);
 
       }
+      const checkProductQuery = `SELECT
+      shopping_cart.item_id,
+      product.product_id,
+      product.name,
+      shopping_cart.attributes,
+      product.price,
+      shopping_cart.quantity,
+      product.image, (price * quantity) AS subtotal
+      FROM product
+      INNER JOIN shopping_cart ON
+      product.product_id = shopping_cart.product_id
+      WHERE product.product_id = ${product_id}`;
+      const getProducts = await connection.query(checkProductQuery);
+      const result = res.status(200).json({
+        getProducts
+      });
     } catch ( error ) {
       return res.status(500).json({
-        "code": "USR_02",
-        "message": "The field example is empty.",
-        "field": "example",
-        "status": "500"
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
       });
     }
 
@@ -115,12 +127,11 @@ export default class ShoppingCart {
         return result;
       }
     } catch ( error ) {
-      console.log(error)
       return res.status(500).json({
-        "code": "USR_02",
-        "message": "The field example is empty.",
-        "field": "example",
-        "status": "500"
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
       });
     }
   }
@@ -162,7 +173,12 @@ export default class ShoppingCart {
         return result;
       }
     } catch ( error ) {
-
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
@@ -183,7 +199,10 @@ export default class ShoppingCart {
       return result;
     } catch ( error ) {
       return res.status(500).json({
-        statusCode: 500, error
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
       });
     }
   }
@@ -211,7 +230,12 @@ export default class ShoppingCart {
       });
       return result
     } catch ( error ) {
-      console.log(error)
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
@@ -242,7 +266,12 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-      console.log( error );
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
@@ -265,7 +294,12 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
@@ -296,7 +330,12 @@ export default class ShoppingCart {
       });
       return result
     } catch ( error ) {
-      console.log( error )
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
@@ -316,7 +355,12 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 }

@@ -26,6 +26,28 @@ const seed = {
   loginUser: {
     email: 'phil@example.com',
     password: 'phil123'
+  },
+  updateAddress: {
+    address_1: "shalewa",
+    city: "Lagos",
+    region: "TR",
+    postal_code: 2334,
+    country: "Nigeria",
+    shipping_region_id: 45
+  },
+  badUpdateAddress: {
+    address_1: "shalewa",
+    city: "Lagos",
+    region: "TR",
+    postal_code: 2334,
+    country: "Nigeria",
+    shipping_region_id: "4f"
+  },
+  updateCreditCard: {
+    credit_card: '5555555555554444'
+  },
+  updateFakeCreditCard: {
+    credit_card: '5555554555554444'
   }
 }
 
