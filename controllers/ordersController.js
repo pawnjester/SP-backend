@@ -23,25 +23,31 @@ export default class Orders {
         tax_id
       });
       const orderId = orderCreated.insertId
-      const insertOrderDetailQuery = `INSERT INTO order_detail (order_id, product_id, attributes,
+      console.log(orderId)
+      const insertOrderDetailQuery =
+      `INSERT INTO order_detail (order_id, product_id, attributes,
       product_name, quantity, unit_cost)
-      SELECT      orderId, p.product_id, sc.attributes, p.name, sc.quantity,
+      SELECT      12, p.product_id, sc.attributes, p.name, sc.quantity,
       COALESCE(NULLIF(p.discounted_price, 0), p.price) AS unit_cost
       FROM        shopping_cart sc
       INNER JOIN  product p
       ON sc.product_id = p.product_id
-      WHERE       sc.cart_id = ${connection.escape(cart_id)} AND sc.buy_now`;
+      WHERE sc.cart_id = ${connection.escape(cart_id)}
+      AND sc.buy_now`;
       const orderDetail = await connection.query(insertOrderDetailQuery);
-      const updateOrdersQuery = `UPDATE orders
-      SET    total_amount = (SELECT SUM(unit_cost * quantity)
-                             FROM   order_detail
-                             WHERE  order_id = ${connection.escape(orderId)})
-      WHERE  order_id = ${orderId}`;
-      const updateOrders = connection.query(updateOrdersQuery);
-      const emptyCartQuery = `DELETE FROM shopping_cart WHERE cart_id = ${connection.escape(cart_id)}`;
-      const emptyCart = connection.query(emptyCartQuery);
+      // const updateOrdersQuery =
+      // `UPDATE orders
+      // SET total_amount = (SELECT SUM(unit_cost * quantity)
+      //                        FROM   order_detail
+      //                        WHERE  order_id = ${connection.escape(orderId)})
+      // WHERE  order_id = ${connection.escape(orderId)}`;
+      // const updateOrders = connection.query(updateOrdersQuery);
+      // const emptyCartQuery =
+      // `DELETE FROM shopping_cart
+      // WHERE cart_id = ${connection.escape(cart_id)}`;
+      // const emptyCart = connection.query(emptyCartQuery);
       const result = res.status(201).json({
-        orderId
+        orderCreated
       });
       return result;
     } catch ( error ) {
@@ -68,10 +74,10 @@ export default class Orders {
       attributes,
       product_name,
       quantity,
-      unit_cost
+      unit_cost,
       quanity * unit_cost as subtotal
       FROM order_detail
-      where order_id = ${order_id}`
+      where order_id = ${connection.escape(order_id)}`
       const getInfo = await connection.query(getInfoOrderQuery);
       const result = res.status(200).json({
         getInfo
