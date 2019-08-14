@@ -1,6 +1,6 @@
 const seed = {
   newOrder : {
-    cart_id: "FuA7lUyQg",
+    cart_id: "OP4h3jNpK",
     shipping_id: 4,
     tax_id: 2
   },
@@ -21,7 +21,8 @@ const seed = {
     email: 'mike@example.com',
     day_phone: '+351323213511235',
     eve_phone: '+452436143246123',
-    mob_phone: '+351323213511235'
+    mob_phone: '+351323213511235',
+    password: 'phil123'
   },
   loginUser: {
     email: 'phil@example.com',

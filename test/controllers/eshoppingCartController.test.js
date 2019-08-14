@@ -70,15 +70,6 @@ describe('TEST for Shopping Cart Controller', () => {
       done()
     })
   });
-  it('GET /shoppingcart/totalAmount/:cart_id', (done) => {
-    chai.request(app)
-    .get('/shoppingcart/totalAmount/OP4h3jNpK')
-    .end(( error, res ) => {
-      console.log(res)
-      expect(res.body.totalAmount).to.be.an('array')
-      done()
-    })
-  })
   it('GET /shoppingcart/moveToCart/:item_id', (done) => {
     chai.request(app)
     .get(`/shoppingcart/moveToCart/${itemId}`)
@@ -86,28 +77,37 @@ describe('TEST for Shopping Cart Controller', () => {
       done()
     })
   });
-  it("GET /shoppingcart/saveForLater/item_id", (done) => {
+  it('GET /shoppingcart/totalAmount/:cart_id', (done) => {
     chai.request(app)
-    .get(`/shoppingcart/saveForLater/${itemId}`)
+    .get('/shoppingcart/totalAmount/OP4h3jNpK')
     .end(( error, res ) => {
+      // console.log(res)
+      expect(res.body.totalAmount).to.be.an('array')
       done()
     })
   })
-  it('DELETE /shoppingcart/empty/:cart_id', (done) => {
-    chai.request(app)
-    .delete('/shoppingcart/empty/OP4h3jNpK')
-    .end(( error, res ) => {
-      expect(res.body.emptyCart).to.be.an('array')
-      expect(res.body.emptyCart).to.be.empty
-      done()
-    })
-  });
-  it('GET /shoppingcart/getSaved/:cart_id', (done) => {
-    chai.request(app)
-    .get('/shoppingcart/getSaved/OP4h3jNpK')
-    .end(( error, res ) => {
-      expect(res.body.getProducts).to.be.an('array')
-      done()
-    })
-  });
+  // it("GET /shoppingcart/saveForLater/item_id", (done) => {
+  //   chai.request(app)
+  //   .get(`/shoppingcart/saveForLater/${itemId}`)
+  //   .end(( error, res ) => {
+  //     done()
+  //   })
+  // })
+  // it('GET /shoppingcart/getSaved/:cart_id', (done) => {
+  //   chai.request(app)
+  //   .get('/shoppingcart/getSaved/OP4h3jNpK')
+  //   .end(( error, res ) => {
+  //     expect(res.body.getProducts).to.be.an('array')
+  //     done()
+  //   })
+  // });
+  // it('DELETE /shoppingcart/empty/:cart_id', (done) => {
+  //   chai.request(app)
+  //   .delete('/shoppingcart/empty/OP4h3jNpK')
+  //   .end(( error, res ) => {
+  //     expect(res.body.emptyCart).to.be.an('array')
+  //     expect(res.body.emptyCart).to.be.empty
+  //     done()
+  //   })
+  // });
 })
