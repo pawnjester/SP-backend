@@ -48,6 +48,16 @@ const seed = {
   },
   updateFakeCreditCard: {
     credit_card: '5555554555554444'
+  },
+  addProductToCart: {
+    cart_id: 'OP4h3jNpK',
+    product_id: 12,
+    attributes: 'Large, winter',
+    quantity: 2,
+    buy_now: 1
+  },
+  updateCart: {
+    quantity: 8
   }
 }
 
