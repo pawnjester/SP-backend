@@ -8,14 +8,6 @@ chai.should()
 const expect = chai.expect;
 
 describe('Test For Product Controller', () => {
-  // beforeEach((done) => {
-  //   chai.request(app)
-  //   .post('/products/1/reviews')
-  //   .send(seed.newReview)
-  //   .end(( error, res ) => {
-  //     done()
-  //   })
-  // })
   it ('GET /products/:product_id', (done) => {
     chai.request(app)
     .get('/products/2')

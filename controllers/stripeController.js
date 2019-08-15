@@ -9,21 +9,24 @@ export default class StripeController {
 
   /**
    * @description - Receive a front-end payment and create a charge
+   *
    * @param {object} req
    * @param {object} res
    */
   async createCharge (req, res ) {
     try {
-      const stripe = Stripe('sk_test_lomdOfxbm7QDgZWvR82UhV6D');
+      const stripe = Stripe(STRIPE_KEY);
       const { currentUserEmail } = req
       const {
         order_id,
         amount,
-        description } = req.body
+        description, stripeToken } = req.body
+      const roundedAmount = Math.round(amount * 100 )
+      console.log(roundedAmount)
       const createStripeCharge = await stripe.charges.create({
-        amount,
+        amount : roundedAmount,
         currency: "usd",
-        source: 'tok_mastercard',
+        source: stripeToken,
         description,
         metadata: {
           order_id
@@ -33,20 +36,32 @@ export default class StripeController {
         });
         return result;
     } catch ( error ) {
-      console.log(error)
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 
   /**
    * @description - Endpoint that provide a synchronization
+   *
    * @param {object} req
    * @param {object} res
    */
   async provideSync ( req, res ) {
     try {
-
+      let event = JSON.parse(req.body)
+      
     } catch ( error ) {
-
+      return res.status(500).json({
+        "error": {
+          "status": 500,
+          "message": error.message,
+        }
+      });
     }
   }
 }

@@ -1,6 +1,6 @@
 const seed = {
   newOrder : {
-    cart_id: "FuA7lUyQg",
+    cart_id: "OP4h3jNpK",
     shipping_id: 4,
     tax_id: 2
   },
@@ -21,12 +21,44 @@ const seed = {
     email: 'mike@example.com',
     day_phone: '+351323213511235',
     eve_phone: '+452436143246123',
-    mob_phone: '+351323213511235'
+    mob_phone: '+351323213511235',
+    password: 'phil123'
   },
   loginUser: {
-    name: 'Mike',
-    email: 'mike@example.com',
-    
+    email: 'phil@example.com',
+    password: 'phil123'
+  },
+  updateAddress: {
+    address_1: "shalewa",
+    city: "Lagos",
+    region: "TR",
+    postal_code: 2334,
+    country: "Nigeria",
+    shipping_region_id: 45
+  },
+  badUpdateAddress: {
+    address_1: "shalewa",
+    city: "Lagos",
+    region: "TR",
+    postal_code: 2334,
+    country: "Nigeria",
+    shipping_region_id: "4f"
+  },
+  updateCreditCard: {
+    credit_card: '5555555555554444'
+  },
+  updateFakeCreditCard: {
+    credit_card: '5555554555554444'
+  },
+  addProductToCart: {
+    cart_id: 'OP4h3jNpK',
+    product_id: 12,
+    attributes: 'Large, winter',
+    quantity: 2,
+    buy_now: 1
+  },
+  updateCart: {
+    quantity: 8
   }
 }
 

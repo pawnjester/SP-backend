@@ -29,7 +29,7 @@ describe('Test For Shipping Regions', () => {
     .end(( error, res) => {
       expect(res.body.error).to.be.an('object')
       expect(res.body.error).to.not.be.empty
-      expect(res.status).to.eql(422)
+      expect(res.status).to.eql(400)
       done()
     })
   })

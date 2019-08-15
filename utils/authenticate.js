@@ -8,7 +8,7 @@ dotenv.config();
 const { SECRET_KEY } = process.env;
 
 
-export const generateAuthToken = ( email, name, id ) => {
+export const generateAuthToken = ( email ="", name ="", id ) => {
   const token = jwt.sign({
     email, name, id
   }, SECRET_KEY, {
@@ -18,9 +18,9 @@ export const generateAuthToken = ( email, name, id ) => {
 }
 
 export const hashPassword = ( password ) => {
-  const salt = bcrypt.genSaltSync();
-  bcrypt.hashSync(password, salt);
-  return salt;
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  return hash;
 }
 
 export const validPassword = ( password, storedPassword ) => {

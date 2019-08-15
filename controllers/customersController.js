@@ -41,7 +41,6 @@ export default class Customers {
         customer
       });
     } catch ( error ) {
-      console.log(error)
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -66,7 +65,7 @@ export default class Customers {
         name, email, password: hashedPassword
       });
       const customerId = insertedCustomer.insertId;
-      const token = generateAuthToken(email, password, customerId);
+      const token = generateAuthToken(email, name, customerId);
       const modifiedToken = `Bearer ${token}`
       if ( customerId !== null ) {
         const query = `select * from customer where customer_id = ${customerId}`
@@ -102,7 +101,8 @@ export default class Customers {
   async getCustomerById ( req, res ) {
     try {
       const { currentUserId } = req
-      const getCustomerQuery = `select * from customer where customer_id = ${currentUserId}`;
+      const getCustomerQuery =
+      `select * from customer where customer_id = ${currentUserId}`;
       const customer = await connection.query(getCustomerQuery);
       const modifiedCustomer = removePassword(customer)
       const result = res.status(200).json({
@@ -130,38 +130,45 @@ export default class Customers {
       const { email, password }  = req.body;
       const checkEmailQuery =
       `SELECT * FROM customer WHERE email= ${connection.escape(email)}`;
-      const schema = await connection.query(checkEmailQuery);
-      const checkHashedPassword = schema[0].password
-      console.log(checkHashedPassword)
-      if ( schema.length == 0 ) {
-        return res.status(404).json({
-          message: 'Cannot be found'
-        });
-      }
-      else if (!validPassword(password, checkHashedPassword)) {
-        return res.status(400).json({
+      try {
+        const checkemail = await connection.query(checkEmailQuery);
+        const checkHashedPassword = checkemail[0].password
+        if ( checkemail.length == 0 ) {
+          return res.status(404).json({
+            message: 'Cannot be found'
+          });
+        }
+        else if (!validPassword(password, checkHashedPassword)) {
+          return res.status(400).json({
+            "error": {
+              "status": 400,
+              "code": "USR_01",
+              "message": "Email or Password is invalid.",
+              "field": "Email or Password"
+            }
+          });
+        }
+        else {
+          const id = checkemail[0].customer_id
+          const token = generateAuthToken(email, password, id);
+          const modifiedToken = `Bearer ${token}`
+          const schema = removePassword(checkemail)
+          const result = res.status(200).json({
+            customer: {schema},
+            accessToken: modifiedToken,
+            expires_in: "24h"
+          });
+          return result;
+        }
+      } catch ( error ) {
+        return res.status(500).json({
           "error": {
-            "status": 400,
-            "code": "USR_01",
-            "message": "Email or Password is invalid.",
-            "field": "Email or Password"
+            "status": 500,
+            "message": error.message,
           }
         });
       }
-      else {
-        const id = schema[0].customer_id
-        const token = generateAuthToken(email, password, id);
-        const modifiedToken = `Bearer ${token}`
-        const modifiedSchema = removePassword(schema)
-        const result = res.status(200).json({
-          customer: modifiedSchema,
-          accessToken: modifiedToken,
-          expires_in: "24h"
-        });
-        return result;
-      }
     } catch ( error ) {
-      console.log( error )
       return res.status(500).json({
         "error": {
           "status": 500,
@@ -177,45 +184,57 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async loginCustomerWithFacebook ( req, res ) {
-    // console.log("here");
-    try {
-      const { access_token } = req.body;
-      // const
-    } catch ( error ) {
-
-    }
-  }
-
-  /**
-   * @description - Sign In with Facebook login token
-   *
-   * @param {object} req
-   * @param {object} res
-   */
-  static async socialFacebookCallback ( accessToken, refreshToken, profile, done ) {
+  static async socialFacebookCallback ( accessToken,
+    refreshToken, profile, done ) {
     try {
       const {
         id,
         displayName,
         emails } = profile;
-        console.log(emails[0].value)
-        console.log(">>", accessToken)
 
-      // if (!emails) {
-      //   const userWithNoEmail = { noEmail: true };
-      //   return done(null, userWithNoEmail);
-      // }
+      const userEmail = emails[0].value
+      const splitName = displayName.split(' ')
+      const name = splitName[0]
+      const findOrCreateQuery =
+      `insert into customer (name, email)
+      select
+      ${connection.escape(name)},
+      ${connection.escape(userEmail)}
+      from customer
+      where not exists
+      (select email from customer
+      where email=${connection.escape(userEmail)})`
+
+      if (!userEmail) {
+        const userWithNoEmail = { noEmail: true };
+        return done(null, userWithNoEmail);
+      }
+      const findOrCreateUser = await connection.query(findOrCreateQuery);
+      const customerId = findOrCreateUser.insertId;
+      if (customerId !== null ) {
+        const getUserQuery =
+        `select * from customer
+        where email = ${connection.escape(userEmail)}`
+        const token = generateAuthToken(userEmail, name, customerId);
+        const modifiedToken = `Bearer ${token}`
+        const schema = await connection.query(getUserQuery);
+        const user = {
+          customer: {schema},
+          accessToken: modifiedToken,
+          expires_in: "24h"
+        }
+        return done(null, user)
+      }
     } catch ( error ) {
-
+      return error
     }
   }
 
   async socialRedirect ( req, res ) {
     try {
-      console.log("here")
+      //For the Frontend
     } catch ( error ) {
-
+      //Frontend error
     }
   }
 
@@ -232,22 +251,28 @@ export default class Customers {
         region,
         postal_code,
         country,
-        shipping_region_id} = req.body;
-      const { currentUserId } = req
+        shipping_region_id,
+        address_2 } = req.body;
+      const { currentUserId } = req;
+      const shipping_id = parseInt(shipping_region_id, 10);
       const updateCustomerAddressQuery =
-      `UPDATE customer SET address_1 = ${address_1}, city = ${city},
-      region = ${region}, postal_code = ${postal_code},
-      country = ${country}, shipping_region_id = ${shipping_region_id} where customer_id = ${currentUserId}`
-      if ( !req.query ) {
-        return res.status(400).json({
-          message: 'You have put in an address'
-        });
-      } else {
-        const customer = await connection.query(updateCustomerAddressQuery);
-        return res.status(200).json({
-          customer
-        });
-      }
+      `UPDATE customer
+      SET address_1 = ${connection.escape(address_1)},
+      city = ${connection.escape(city)},
+      region = ${connection.escape(region)},
+      postal_code = ${connection.escape(postal_code)},
+      country = ${connection.escape(country)},
+      shipping_region_id = ${connection.escape(shipping_id)}
+      where customer_id = ${currentUserId}`;
+      const updateCustomer = await connection.query(updateCustomerAddressQuery);
+      const getCustomerQuery =
+      `select * from customer
+      where customer_id = ${currentUserId}`;
+      const getCustomer = await connection.query(getCustomerQuery);
+      const customer = removePassword(getCustomer);
+      return res.status(200).json({
+        customer
+      });
     } catch ( error ) {
       return res.status(500).json({
         "error": {
@@ -275,7 +300,12 @@ export default class Customers {
       where customer_id = ${currentUserId}`;
       if ( !credit_card ) {
         return res.status(400).json({
-          message: 'You have to put in a credit card'
+          "error": {
+            "status": 400,
+            "code": "USR_08",
+            "message": "You have to put in a credit card",
+            "field": "credit_card"
+          }
         });
       } else if (!isValidCard(credit_card)) {
         return res.status(400).json({
@@ -289,7 +319,9 @@ export default class Customers {
       }
       else {
         const updateCustomer = await connection.query(updateCreditCardQuery);
-        const customerQuery = `select * from customer where customer_id = ${currentUserId}`
+        const customerQuery =
+        `select * from customer
+        where customer_id = ${currentUserId}`
         const customer = await connection.query(customerQuery);
         const modifiedSchema = removePassword(customer)
         const result = res.status(200).json({
