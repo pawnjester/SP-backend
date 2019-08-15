@@ -65,7 +65,7 @@ export default class Customers {
         name, email, password: hashedPassword
       });
       const customerId = insertedCustomer.insertId;
-      const token = generateAuthToken(email, password, customerId);
+      const token = generateAuthToken(email, name, customerId);
       const modifiedToken = `Bearer ${token}`
       if ( customerId !== null ) {
         const query = `select * from customer where customer_id = ${customerId}`
@@ -101,7 +101,8 @@ export default class Customers {
   async getCustomerById ( req, res ) {
     try {
       const { currentUserId } = req
-      const getCustomerQuery = `select * from customer where customer_id = ${currentUserId}`;
+      const getCustomerQuery =
+      `select * from customer where customer_id = ${currentUserId}`;
       const customer = await connection.query(getCustomerQuery);
       const modifiedCustomer = removePassword(customer)
       const result = res.status(200).json({
@@ -183,45 +184,57 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async loginCustomerWithFacebook ( req, res ) {
-    // console.log("here");
-    try {
-      const { access_token } = req.body;
-      // const
-    } catch ( error ) {
-
-    }
-  }
-
-  /**
-   * @description - Sign In with Facebook login token
-   *
-   * @param {object} req
-   * @param {object} res
-   */
-  static async socialFacebookCallback ( accessToken, refreshToken, profile, done ) {
+  static async socialFacebookCallback ( accessToken,
+    refreshToken, profile, done ) {
     try {
       const {
         id,
         displayName,
         emails } = profile;
-        console.log(emails[0].value)
-        console.log(">>", accessToken)
 
-      // if (!emails) {
-      //   const userWithNoEmail = { noEmail: true };
-      //   return done(null, userWithNoEmail);
-      // }
+      const userEmail = emails[0].value
+      const splitName = displayName.split(' ')
+      const name = splitName[0]
+      const findOrCreateQuery =
+      `insert into customer (name, email)
+      select
+      ${connection.escape(name)},
+      ${connection.escape(userEmail)}
+      from customer
+      where not exists
+      (select email from customer
+      where email=${connection.escape(userEmail)})`
+
+      if (!userEmail) {
+        const userWithNoEmail = { noEmail: true };
+        return done(null, userWithNoEmail);
+      }
+      const findOrCreateUser = await connection.query(findOrCreateQuery);
+      const customerId = findOrCreateUser.insertId;
+      if (customerId !== null ) {
+        const getUserQuery =
+        `select * from customer
+        where email = ${connection.escape(userEmail)}`
+        const token = generateAuthToken(userEmail, name, customerId);
+        const modifiedToken = `Bearer ${token}`
+        const schema = await connection.query(getUserQuery);
+        const user = {
+          customer: {schema},
+          accessToken: modifiedToken,
+          expires_in: "24h"
+        }
+        return done(null, user)
+      }
     } catch ( error ) {
-
+      return error
     }
   }
 
   async socialRedirect ( req, res ) {
     try {
-      console.log("here")
+      //For the Frontend
     } catch ( error ) {
-
+      //Frontend error
     }
   }
 

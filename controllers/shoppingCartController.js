@@ -125,10 +125,11 @@ export default class ShoppingCart {
         product.product_id,
         product.name,
         shopping_cart.attributes,
-        product.price,
+        COALESCE(NULLIF(product.discounted_price, 0), product.price) AS price,
         shopping_cart.quantity,
         product.image,
-        (price * quantity) AS subtotal
+        COALESCE(NULLIF(product.discounted_price, 0),
+                      product.price) * shopping_cart.quantity AS subtotal
         FROM product
         INNER JOIN shopping_cart
         ON product.product_id = shopping_cart.product_id

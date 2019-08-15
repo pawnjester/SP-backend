@@ -12,10 +12,9 @@ router.put('/customer', verifyToken, validation.checkUserInput,customer.updateCu
 router.get('/customer', verifyToken, customer.getCustomerById);
 router.post('/customers', customer.registerCustomer);
 router.post('/customers/login', customer.loginCustomer);
-router.post('/customers/facebook', customer.loginCustomerWithFacebook);
 router.put('/customers/address', verifyToken, validation.updateCustomer,customer.updateCustomerAddress);
 router.put('/customers/creditCard', verifyToken, customer.updateCreditCard);
-router.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
+router.get('/customers/facebook', passport.authenticate('facebook', {scope: 'email'}));
 router.get('/auth/facebook/callback', passport.authenticate('facebook', customer.socialRedirect));
 
 
