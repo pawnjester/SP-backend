@@ -11,7 +11,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getAllProducts ( req, res ) {
+  async getAllProducts ( req, res, next ) {
     try {
       const { page, limit, description_length } = req.query;
       const pageLimit = parseInt((limit || 20), 10);
@@ -41,12 +41,7 @@ export default class Products {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -57,7 +52,7 @@ export default class Products {
    * @param {object} res
    *
    */
-  async searchProducts ( req, res ) {
+  async searchProducts ( req, res, next ) {
     try {
       const { query_string, all_words } = req.query
       const searchProductsQuery =
@@ -69,7 +64,7 @@ export default class Products {
 
     END IF;`
     } catch ( error ) {
-
+      return next(error)
     }
   }
 
@@ -79,7 +74,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getProductById (req, res ) {
+  async getProductById (req, res, next ) {
     try {
       const { product_id } = req.params;
       const getProductByIdQuery = `SELECT * FROM Product WHERE product_id = ${product_id}`
@@ -90,12 +85,7 @@ export default class Products {
       })
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -105,7 +95,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getProductsCategories ( req, res ) {
+  async getProductsCategories ( req, res, next ) {
     try {
       const  { category_id, description_length } = req.params;
       const { page, limit,  } = req.query;
@@ -141,12 +131,7 @@ export default class Products {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -156,7 +141,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getProductsDepartment (req, res ) {
+  async getProductsDepartment (req, res, next ) {
     try  {
       const  { department_id } = req.params;
       const { page, limit, description_length } = req.query;
@@ -195,12 +180,7 @@ export default class Products {
       })
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -210,7 +190,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getProductDetails ( req, res ) {
+  async getProductDetails ( req, res, next ) {
     try {
       const { product_id } = req.params;
       const getDetailsQuery =
@@ -228,12 +208,7 @@ export default class Products {
       });
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -243,7 +218,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getLocationOfProduct ( req, res ) {
+  async getLocationOfProduct ( req, res, next ) {
     try {
       const { product_id } = req.params;
       const getLocationOfProductQuery =
@@ -266,12 +241,7 @@ export default class Products {
         });
         return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -281,7 +251,7 @@ export default class Products {
    * @param {object} req
    * @param {object} res
    */
-  async getReviewsOfProduct ( req, res ) {
+  async getReviewsOfProduct ( req, res, next ) {
     try {
       const  { product_id } = req.params;
       const getReviewsOfProductQuery =
@@ -301,12 +271,7 @@ export default class Products {
       return result;
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-      "error": {
-        "status": 500,
-        "message": error.message,
-      }
-    })
+      return next(error)
     }
   }
 
@@ -316,7 +281,7 @@ export default class Products {
    * @param {object } req
    * @param {object} res
    */
-  async postReviews ( req, res ) {
+  async postReviews ( req, res, next ) {
     try {
       const { product_id } = req.params;
       const { currentUserId } = req
@@ -346,12 +311,7 @@ export default class Products {
         return result;
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 }

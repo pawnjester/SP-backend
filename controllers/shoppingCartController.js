@@ -111,7 +111,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async getListOfProductsInCart ( req, res ) {
+  async getListOfProductsInCart ( req, res, next ) {
     try {
       const { cart_id } = req.params;
       const getListFromShoppingCartQuery =
@@ -142,12 +142,7 @@ export default class ShoppingCart {
         return result;
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -157,7 +152,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async updateCart ( req, res ) {
+  async updateCart ( req, res, next ) {
     try {
       const { item_id } = req.params;
       const { quantity } = req.body
@@ -206,12 +201,7 @@ export default class ShoppingCart {
         })
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -221,7 +211,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async emptyCart ( req, res ) {
+  async emptyCart ( req, res, next ) {
     try{
       const { cart_id } = req.params;
       const emptyCartQuery =
@@ -234,12 +224,7 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -249,7 +234,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async moveProductInCart ( req, res ) {
+  async moveProductInCart ( req, res, next ) {
     try {
       const  { item_id } = req.params;
       const id = parseInt(item_id, 10);
@@ -280,12 +265,7 @@ export default class ShoppingCart {
         })
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -295,7 +275,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async returnTotalAmount ( req, res ) {
+  async returnTotalAmount ( req, res , next) {
     try {
       const { cart_id } = req.params;
       const checkIfProductExistsQuery =
@@ -319,22 +299,10 @@ export default class ShoppingCart {
         });
         return result;
       } else {
-        return res.status(400).json({
-          "error": {
-            "status": 400,
-            "code" :"CAR_01",
-            "message": "Cart Id cannot be found",
-            "field": "cart_id"
-          }
-        })
+        return next(error)
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error);
     }
   }
 
@@ -344,7 +312,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async saveProductForLater ( req, res ) {
+  async saveProductForLater ( req, res, next ) {
     try {
       const  { item_id } = req.params;
       const checkIfProductExistsQuery = `select * from shopping_cart where item_id = ${connection.escape(item_id)}`;
@@ -370,12 +338,7 @@ export default class ShoppingCart {
         })
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -385,7 +348,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async getProductsSaved ( req, res ) {
+  async getProductsSaved ( req, res, next ) {
     try {
       const { cart_id } = req.params;
       const getProductsQuery =
@@ -405,12 +368,7 @@ export default class ShoppingCart {
       });
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -420,7 +378,7 @@ export default class ShoppingCart {
    * @param {object} req
    * @param {object} res
    */
-  async removeProductFromCart ( req, res ) {
+  async removeProductFromCart ( req, res, next ) {
     try {
       const { item_id } = req.params;
       const removeProductQuery =
@@ -432,12 +390,7 @@ export default class ShoppingCart {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error);
     }
   }
 }

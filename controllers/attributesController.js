@@ -9,7 +9,7 @@ export default class Attributes {
    * @param {object} req
    * @param {object} res
    */
-  async getAttributesList (req, res ) {
+  async getAttributesList (req, res, next ) {
     try {
       const getAttributeQuery =
       `SELECT
@@ -22,12 +22,7 @@ export default class Attributes {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -37,7 +32,7 @@ export default class Attributes {
    * @param {object} req
    * @param {object} res
    */
-  async getAttributeListById ( req, res ) {
+  async getAttributeListById ( req, res, next ) {
     try {
       const { attribute_id } = req.params;
       const getAttributeByIdQuery = `SELECT attribute_id, name FROM Attribute
@@ -48,12 +43,7 @@ export default class Attributes {
       });
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -63,7 +53,7 @@ export default class Attributes {
    * @param {object} req
    * @param {object} res
    */
-  async getValuesAttributes ( req, res ) {
+  async getValuesAttributes ( req, res, next ) {
     try {
       const { attribute_id } = req.params;
       const getAttributeValueByIdQuery =
@@ -79,12 +69,7 @@ export default class Attributes {
       })
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -94,13 +79,14 @@ export default class Attributes {
    * @param {object} req
    * @param {object} res
    */
-  async getAllAttributesProductId ( req, res ) {
+  async getAllAttributesProductId ( req, res, next ) {
     try {
       const  { product_id } = req.params;
       const getAllAttributesProductIdQuery =
       `SELECT
        attribute.name AS attribute_name,
-       attribute_value.attribute_value_id, attribute_value.value AS attribute_value
+       attribute_value.attribute_value_id,
+       attribute_value.value AS attribute_value
        FROM       attribute_value
        INNER JOIN attribute
        ON attribute_value.attribute_id = attribute.attribute_id
@@ -117,12 +103,7 @@ export default class Attributes {
         return result;
       } catch ( error ) {
         console.log(error)
-        return res.status(500).json({
-          "error": {
-            "status": 500,
-            "message": error.message,
-          }
-        })
+        return next(error)
       }
   }
 }

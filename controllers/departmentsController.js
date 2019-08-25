@@ -8,7 +8,7 @@ export default class Department {
    * @param {object} req
    * @param {object} res
    */
-  async getDepartment ( req, res ) {
+  async getDepartment ( req, res, next ) {
     try {
       const getDepartmentQuery = `SELECT * FROM department `;
       const getDepartment = await connection.query(getDepartmentQuery);
@@ -17,12 +17,7 @@ export default class Department {
       })
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -32,7 +27,7 @@ export default class Department {
    * @param {object} req
    * @param {object} res
    */
-  async getDepartmentById ( req, res ) {
+  async getDepartmentById ( req, res, next ) {
     try {
       const { department_id } = req.params;
       const getDeptByIdQuery = `SELECT * FROM department WHERE department_id = ${department_id}`
@@ -52,12 +47,7 @@ export default class Department {
       })
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error" : {
-          "status" : 500,
-          "message": error.message
-        }
-      })
+      return next(error)
     }
   }
 }

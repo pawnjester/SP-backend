@@ -8,7 +8,7 @@ export default class Categories {
    * @param {object} req
    * @param {object} res
    */
-  async getCategories ( req, res ) {
+  async getCategories ( req, res, next ) {
     try {
       const { order, page, limit } = req.query;
       const pageLimit = parseInt((limit || 20), 10);
@@ -17,7 +17,9 @@ export default class Categories {
       const count = await connection.query(countQuery);
       const sortedOrder = order === "category_id" || order === "name" ? order : "category_id"
       const getCategoriesQuery =
-      `SELECT category_id,name,description, department_id FROM category ORDER BY ${sortedOrder} DESC limit ${pageLimit} offset ${offset}`;
+      `SELECT category_id,name,description, department_id
+      FROM category
+      ORDER BY ${sortedOrder} DESC limit ${pageLimit} offset ${offset}`;
       const rows = await connection.query(getCategoriesQuery);
       const result = res.status(200).json({
         count: count[0].count,
@@ -25,12 +27,7 @@ export default class Categories {
       })
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -40,11 +37,12 @@ export default class Categories {
    * @param {object} req
    * @param {object} res
    */
-  async getCategoryById ( req, res ) {
+  async getCategoryById ( req, res, next ) {
     try {
       const { category_id } = req.params;
       const getCategoryByIdQuery =
-      `SELECT category_id, name, description, department_id FROM category WHERE category_id = ${category_id}`
+      `SELECT category_id, name, description, department_id
+      FROM category WHERE category_id = ${category_id}`
       const getCategoryByIdResult = await connection.query(getCategoryByIdQuery);
       const getCategoryById = getCategoryByIdResult[0]
       const result = res.status(200).json({
@@ -52,12 +50,7 @@ export default class Categories {
       })
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -67,7 +60,7 @@ export default class Categories {
    * @param {object} req
    * @param {object} res
    */
-  async getCategoriesOfProduct ( req, res ) {
+  async getCategoriesOfProduct ( req, res, next ) {
     try {
       const { product_id } = req.params;
       const getCategoriesOfProductQuery =
@@ -86,12 +79,7 @@ export default class Categories {
       })
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -101,7 +89,8 @@ export default class Categories {
    * @param {object} req
    * @param {object} res
    */
-  async getCategoriesOfDepartment ( req, res ) {try {
+  async getCategoriesOfDepartment ( req, res, next ) {
+    try {
     const { department_id } = req.params;
     const getCategoriesOfDeptQuery =
     `SELECT * FROM category
@@ -112,12 +101,7 @@ export default class Categories {
     })
     return result
   } catch ( error ) {
-    return res.status(500).json({
-      "error": {
-        "status": 500,
-        "message": error.message,
-      }
-    })
+    return next(error)
   }
   }
 }

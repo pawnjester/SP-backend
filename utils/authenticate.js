@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import connection from '../config/config.js';
-import { decode } from 'punycode';
 
 dotenv.config();
 const { SECRET_KEY } = process.env;

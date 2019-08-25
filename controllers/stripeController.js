@@ -13,7 +13,7 @@ export default class StripeController {
    * @param {object} req
    * @param {object} res
    */
-  async createCharge (req, res ) {
+  async createCharge (req, res, next ) {
     try {
       const stripe = Stripe(STRIPE_KEY);
       const { currentUserEmail } = req
@@ -36,12 +36,7 @@ export default class StripeController {
         });
         return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -51,17 +46,12 @@ export default class StripeController {
    * @param {object} req
    * @param {object} res
    */
-  async provideSync ( req, res ) {
+  async provideSync ( req, res, next ) {
     try {
       let event = JSON.parse(req.body)
-      
+
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 }
