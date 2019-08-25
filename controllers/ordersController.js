@@ -10,7 +10,7 @@ export default class Orders {
    * @param {object} req
    * @param {object} res
    */
-  async createOrder ( req, res ) {
+  async createOrder ( req, res, next ) {
     try {
       const  { cart_id, shipping_id, tax_id } = req.body;
       const { currentUserId } = req
@@ -55,12 +55,7 @@ export default class Orders {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -70,7 +65,7 @@ export default class Orders {
    * @param {object} req
    * @param {object} res
    */
-  async getInfoOrder ( req, res ) {
+  async getInfoOrder ( req, res, next ) {
     try {
       const { order_id } = req.params;
       const getInfoOrderQuery =
@@ -91,12 +86,7 @@ export default class Orders {
       return result
     } catch ( error ) {
       console.log(error)
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -106,7 +96,7 @@ export default class Orders {
    * @param {object} req
    * @param {object} res
    */
-  async getOrdersByCustomer ( req, res ) {
+  async getOrdersByCustomer ( req, res, next ) {
     try {
       const { currentUserId } = req;
       console.log(currentUserId)
@@ -129,12 +119,7 @@ export default class Orders {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -144,7 +129,7 @@ export default class Orders {
    * @param {object} req
    * @param {object} res
    */
-  async getShortInfoOrder ( req, res ) {
+  async getShortInfoOrder ( req, res, next ) {
     try {
       const  { order_id } = req.params;
       const getShortInfoQuery =
@@ -165,12 +150,7 @@ export default class Orders {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 }

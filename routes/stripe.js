@@ -1,6 +1,5 @@
 import express from 'express';
 import Stripe from '../controllers/stripeController';
-import Orders from '../controllers/ordersController';
 
 const router = express.Router();
 const stripe = new Stripe();

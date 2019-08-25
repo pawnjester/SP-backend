@@ -14,7 +14,7 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async updateCustomer ( req, res ) {
+  async updateCustomer ( req, res, next ) {
     try {
       const {
         name,
@@ -41,12 +41,7 @@ export default class Customers {
         customer
       });
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -56,7 +51,7 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async registerCustomer (req, res ) {
+  async registerCustomer (req, res, next ) {
     try {
       const { name, email, password } = req.body;
       const createCustomerQuery = `INSERT INTO customer SET ?`;
@@ -83,12 +78,7 @@ export default class Customers {
         });
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -98,7 +88,7 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async getCustomerById ( req, res ) {
+  async getCustomerById ( req, res, next ) {
     try {
       const { currentUserId } = req
       const getCustomerQuery =
@@ -110,12 +100,7 @@ export default class Customers {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -125,12 +110,11 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async loginCustomer ( req, res ) {
+  async loginCustomer ( req, res, next ) {
     try {
       const { email, password }  = req.body;
       const checkEmailQuery =
       `SELECT * FROM customer WHERE email= ${connection.escape(email)}`;
-      try {
         const checkemail = await connection.query(checkEmailQuery);
         const checkHashedPassword = checkemail[0].password
         if ( checkemail.length == 0 ) {
@@ -160,21 +144,8 @@ export default class Customers {
           });
           return result;
         }
-      } catch ( error ) {
-        return res.status(500).json({
-          "error": {
-            "status": 500,
-            "message": error.message,
-          }
-        });
-      }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -244,7 +215,7 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async updateCustomerAddress ( req, res ) {
+  async updateCustomerAddress ( req, res, next ) {
     try {
       const { address_1,
         city,
@@ -274,12 +245,7 @@ export default class Customers {
         customer
       });
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -289,7 +255,7 @@ export default class Customers {
    * @param {object} req
    * @param {object} res
    */
-  async updateCreditCard ( req, res ) {
+  async updateCreditCard ( req, res, next ) {
     try {
       const { credit_card } = req.body;
       const { currentUserId } = req
@@ -330,12 +296,7 @@ export default class Customers {
         return result;
       }
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 }

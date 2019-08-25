@@ -9,7 +9,7 @@ export default class Tax {
    * @param {object} req
    * @param {object} res
    */
-  async getAllTaxes ( req, res ) {
+  async getAllTaxes ( req, res, next ) {
     try {
       const getAllTaxQuery = `SELECT * from Tax`;
       const getAllTax = await connection.query(getAllTaxQuery);
@@ -18,12 +18,7 @@ export default class Tax {
       });
       return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 
@@ -33,7 +28,7 @@ export default class Tax {
    * @param {object} req
    * @param {object} res
    */
-  async getTaxById ( req, res ) {
+  async getTaxById ( req, res, next ) {
     try {
       const { tax_id } = req.params;
       const getTaxByIdQuery =
@@ -44,12 +39,7 @@ export default class Tax {
       });
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 }

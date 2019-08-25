@@ -38,7 +38,19 @@ app.get('/', (req, res) => {
   res.status(200).json({
     message: 'Welcome Here'
   })
-})
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  // eslint-disable-line no-unused-vars
+  return res.status(err.status || 500).json({
+    error: {
+      message: err.message,
+      error: {},
+    },
+    status: false,
+  });
+});
 
 connection.getConnection(( error, connection ) => {
   if (error) {

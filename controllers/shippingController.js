@@ -9,7 +9,7 @@ export default class Shipping {
    * @param {object} req
    * @param {object} res
    */
-  async getShippingRegions ( req, res ) {
+  async getShippingRegions ( req, res, next ) {
     try {
       const getShippingRegionsQuery = `SELECT * FROM shipping_region`;
       const getShippingRegion = await connection.query(getShippingRegionsQuery);
@@ -18,12 +18,7 @@ export default class Shipping {
       });
      return result;
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      });
+      return next(error)
     }
   }
 
@@ -33,7 +28,7 @@ export default class Shipping {
    * @param {object} req
    * @param {object} res
    */
-  async getShippingRegionsById (req, res ) {
+  async getShippingRegionsById (req, res, next ) {
     try {
       const { shipping_region_id } = req.params;
       const getShippingRegionByIdQuery = `SELECT * FROM shipping WHERE shipping_region_id = ${shipping_region_id}`
@@ -43,12 +38,7 @@ export default class Shipping {
       });
       return result
     } catch ( error ) {
-      return res.status(500).json({
-        "error": {
-          "status": 500,
-          "message": error.message,
-        }
-      })
+      return next(error)
     }
   }
 }
