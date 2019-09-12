@@ -1,7 +1,7 @@
 ## SP-Backend
 This is the backend implementation of an e-commerce application.
 
-##Core Technology Stacks
+## Core Technology Stacks
 - ExpressJS and MYSql
 - Node
 
